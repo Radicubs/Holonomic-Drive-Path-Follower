@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,6 +34,12 @@ public class HolonomicChassisSim extends SubsystemBase {
         fieldOriented = true;
     }
 
+    public void displayTrajectory(Trajectory trajectory){
+        field2d.getObject("robo").setTrajectory(trajectory);
+    }
+    public void displayPoses(Pose2d ...pose2ds){
+        field2d.getObject("robo").setPoses(pose2ds);
+    }
     /*public void driveFromRobotOrientedChassisSpeeds(ChassisSpeeds robotOrientedSpeeds){
         ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(robotOrientedSpeeds, robotPose.getRotation().unaryMinus());
         targetXVelocity = fieldRelativeSpeeds.vxMetersPerSecond;
