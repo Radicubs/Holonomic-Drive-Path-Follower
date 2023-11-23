@@ -22,7 +22,7 @@ public class HolonomicChassisSim extends SubsystemBase {
     public HolonomicChassisSim(){
         field2d = new Field2d();
         SmartDashboard.putData(field2d);
-        robotPose = new Pose2d(4, 4, new Rotation2d());
+        robotPose = new Pose2d(1, 1, new Rotation2d());
         xVelocity = yVelocity = angVelocity = 0;
         fieldOriented = true;
     }
@@ -54,6 +54,10 @@ public class HolonomicChassisSim extends SubsystemBase {
 
     public Pose2d getRobotPose(){
         return robotPose;
+    }
+
+    public void setRobotPose(Pose2d robotPose){
+        this.robotPose = robotPose;
     }
 
     public Rotation2d getRobotAngle(){
