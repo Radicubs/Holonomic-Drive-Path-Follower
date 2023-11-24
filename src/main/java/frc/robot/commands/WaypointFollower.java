@@ -35,12 +35,8 @@ public class WaypointFollower extends CommandBase {
                 endingPose,
                 new TrajectoryConfig(Constants.Simulation.MAX_AXIS_SPEED, Constants.Simulation.MAX_ACCELERATION));
 
-        //Display Trajectory and Waypoints
+        //Display Trajectory
         chassisSim.displayTrajectory(trajectory);
-        Pose2d[] waypointPoses = Stream.of(waypoints).map(e -> new Pose2d(e, new Rotation2d())).toArray(Pose2d[]::new);
-        waypointPoses[0] = startingPose;
-        waypointPoses[waypointPoses.length - 1] = endingPose;
-        chassisSim.displayPoses(waypointPoses);
         addRequirements(chassisSim);
     }
 }
