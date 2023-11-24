@@ -13,6 +13,7 @@ import frc.robot.subsystems.HolonomicChassisSim;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class TeleOpControl extends CommandBase {
@@ -20,11 +21,13 @@ public class TeleOpControl extends CommandBase {
     DoubleSupplier xInput;
     DoubleSupplier yInput;
     DoubleSupplier rotInput;
-    public TeleOpControl(HolonomicChassisSim chassisSim, DoubleSupplier xInput, DoubleSupplier yInput, DoubleSupplier rotInput){
+    BooleanSupplier isFieldOriented;
+    public TeleOpControl(HolonomicChassisSim chassisSim, DoubleSupplier xInput, DoubleSupplier yInput, DoubleSupplier rotInput, BooleanSupplier isFieldOriented){
         this.chassisSim = chassisSim;
         this.xInput = xInput;
         this.yInput = yInput;
         this.rotInput = rotInput;
+        this.isFieldOriented = isFieldOriented;
         addRequirements(chassisSim);
     }
 
@@ -40,10 +43,16 @@ public class TeleOpControl extends CommandBase {
 
     @Override
     public void execute() {
-        chassisSim.driveFromFieldOrientedChassisSpeeds(new ChassisSpeeds(
-            xInput.getAsDouble() * Constants.Simulation.MAX_AXIS_SPEED,
-            yInput.getAsDouble() * Constants.Simulation.MAX_AXIS_SPEED,
-            rotInput.getAsDouble() * Constants.Simulation.MAX_ANGULAR_SPEED
-        ));
+        ChassisSpeeds speeds = new ChassisSpeeds(
+                xInput.getAsDouble() * Constants.Simulation.MAX_AXIS_SPEED,
+                yInput.getAsDouble() * Constants.Simulation.MAX_AXIS_SPEED,
+                rotInput.getAsDouble() * Constants.Simulation.MAX_ANGULAR_SPEED
+        );
+        if(isFieldOriented.getAsBoolean()){
+            chassisSim.driveFromFieldOrientedChassisSpeeds(speeds);
+        }
+        else{
+            chassisSim.driveFromRobotOrientedChassisSpeeds(speeds);
+        }
     }
 }

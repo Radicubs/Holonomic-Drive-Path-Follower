@@ -34,34 +34,44 @@ public class HolonomicChassisSim extends SubsystemBase {
         fieldOriented = true;
     }
 
+    public void driveFromRobotOrientedChassisSpeeds(ChassisSpeeds robotOrientedSpeeds){
+        //robot oriented to field oriented conversion
+        //velocity attributes of class are field oriented
+        Translation2d robotOrientedSpeed = new Translation2d(robotOrientedSpeeds.vxMetersPerSecond, robotOrientedSpeeds.vyMetersPerSecond);
+        Translation2d fieldOrientedSpeed = robotOrientedSpeed.rotateBy(getAdjustedRobotAngle());
+
+        targetXVelocity = fieldOrientedSpeed.getX();
+        targetYVelocity = fieldOrientedSpeed.getY();
+
+        //rotation is rotation, even if you rotate the rotation :)
+        targetAngVelocity = robotOrientedSpeeds.omegaRadiansPerSecond;
+        fieldOriented = true;
+    }
+
     public void displayTrajectory(Trajectory trajectory){
         field2d.getObject("trajectory").setTrajectory(trajectory);
     }
     public void displayPoses(Pose2d ...pose2ds){
         field2d.getObject("poses").setPoses(pose2ds);
     }
-    /*public void driveFromRobotOrientedChassisSpeeds(ChassisSpeeds robotOrientedSpeeds){
-        ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(robotOrientedSpeeds, robotPose.getRotation().unaryMinus());
-        targetXVelocity = fieldRelativeSpeeds.vxMetersPerSecond;
-        targetYVelocity = fieldRelativeSpeeds.vyMetersPerSecond;
-        targetAngVelocity = fieldRelativeSpeeds.omegaRadiansPerSecond;
-        fieldOriented = true;
-    }*/
+
+
 
     public ChassisSpeeds getChassisSpeeds(){
         return new ChassisSpeeds(xVelocity, yVelocity, angVelocity);
     }
 
-    public Pose2d getRobotPose(){
-        return robotPose;
+    //robot pose heading and display image are 90 deg off
+    public Pose2d getAdjustedRobotPose(){
+        return robotPose.transformBy(new Transform2d(new Translation2d(), new Rotation2d(-Units.degreesToRadians(90))));
     }
 
     public void setRobotPose(Pose2d robotPose){
-        this.robotPose = robotPose;
+        this.robotPose = robotPose.transformBy(new Transform2d(new Translation2d(), new Rotation2d(Units.degreesToRadians(90))));
     }
 
-    public Rotation2d getRobotAngle(){
-        return robotPose.getRotation();
+    public Rotation2d getAdjustedRobotAngle(){
+        return robotPose.getRotation().minus(new Rotation2d(Units.degreesToRadians(90)));
     }
 
     @Override

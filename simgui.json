@@ -9,6 +9,7 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Control Mode": "String Chooser",
       "/SmartDashboard/Field": "Field2d"
     }
   },

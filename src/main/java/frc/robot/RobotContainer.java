@@ -9,6 +9,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.TeleOpControl;
 import frc.robot.commands.WaypointFollower;
@@ -28,11 +30,17 @@ public class RobotContainer
     {
         joystick = new Joystick(0);
         chassisSim = new HolonomicChassisSim();
+        SendableChooser<Boolean> isFieldOriented = new SendableChooser<>();
+        isFieldOriented.setDefaultOption("Field Oriented", true);
+        isFieldOriented.addOption("Robot Oriented", false);
+        SmartDashboard.putData("Control Mode", isFieldOriented);
+
         chassisSim.setDefaultCommand(new TeleOpControl(
                 chassisSim,
                 () -> joystick.getRawAxis(0),
                 () -> -joystick.getRawAxis(1),
-                () -> joystick.getRawAxis(2)
+                () -> joystick.getRawAxis(2),
+                isFieldOriented::getSelected
         ));
         configureBindings();
     }
