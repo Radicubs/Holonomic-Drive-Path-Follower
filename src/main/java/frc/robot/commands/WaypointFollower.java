@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 
 public class WaypointFollower extends CommandBase {
 
+    private final HolonomicChassisSim chassisSim;
     private final Trajectory trajectory;
     private final HolonomicDriveController controller;
     private final Timer timer;
@@ -36,6 +37,7 @@ public class WaypointFollower extends CommandBase {
             System.out.println("bruhhhh wha da heeeeeelllllll aint no way blud tryna use 1 waypoint to generate a trajectory you goofy ahh go back to cs 1");
             this.cancel();
         }
+        this.chassisSim = chassisSim;
 
         // Generate Trajectory
         Pose2d startingPose = new Pose2d(waypoints[0], startingRot);
@@ -63,6 +65,7 @@ public class WaypointFollower extends CommandBase {
     @Override
     public void initialize() {
         timer.start();
+        chassisSim.setRobotPose(trajectory.getInitialPose());
     }
 
     @Override

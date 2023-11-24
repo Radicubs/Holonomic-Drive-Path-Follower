@@ -62,12 +62,12 @@ public class HolonomicChassisSim extends SubsystemBase {
     }
 
     //robot pose heading and display image are 90 deg off
-    public Pose2d getAdjustedRobotPose(){
-        return robotPose.transformBy(new Transform2d(new Translation2d(), new Rotation2d(-Units.degreesToRadians(90))));
+    public Pose2d getRobotPose(){
+        return robotPose;
     }
 
     public void setRobotPose(Pose2d robotPose){
-        this.robotPose = robotPose.transformBy(new Transform2d(new Translation2d(), new Rotation2d(Units.degreesToRadians(90))));
+        this.robotPose = robotPose;
     }
 
     public Rotation2d getAdjustedRobotAngle(){
