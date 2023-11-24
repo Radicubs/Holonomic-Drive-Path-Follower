@@ -35,10 +35,10 @@ public class HolonomicChassisSim extends SubsystemBase {
     }
 
     public void displayTrajectory(Trajectory trajectory){
-        field2d.getObject("robo").setTrajectory(trajectory);
+        field2d.getObject("trajectory").setTrajectory(trajectory);
     }
     public void displayPoses(Pose2d ...pose2ds){
-        field2d.getObject("robo").setPoses(pose2ds);
+        field2d.getObject("poses").setPoses(pose2ds);
     }
     /*public void driveFromRobotOrientedChassisSpeeds(ChassisSpeeds robotOrientedSpeeds){
         ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(robotOrientedSpeeds, robotPose.getRotation().unaryMinus());

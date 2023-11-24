@@ -30,12 +30,12 @@ public class TeleOpControl extends CommandBase {
 
     @Override
     public void initialize() {
-        Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
+        /*Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
                 new Pose2d(new Translation2d(2, 2), new Rotation2d()),
                 List.of(),
                 new Pose2d(new Translation2d(6, 3), new Rotation2d()),
                 new TrajectoryConfig(Constants.Simulation.MAX_AXIS_SPEED, Constants.Simulation.MAX_ACCELERATION));
-        chassisSim.displayTrajectory(trajectory);
+        chassisSim.displayTrajectory(trajectory);*/
     }
 
     @Override

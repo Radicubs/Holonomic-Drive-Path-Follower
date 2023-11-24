@@ -5,9 +5,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.TeleOpControl;
+import frc.robot.commands.WaypointFollower;
 import frc.robot.subsystems.HolonomicChassisSim;
 
 /**
@@ -48,7 +52,11 @@ public class RobotContainer
      */
     public Command getAutonomousCommand()
     {
-        // TODO: Implement properly
-        return null;
+        return new WaypointFollower(chassisSim,
+                new Rotation2d(120),
+                new Rotation2d(90),
+                new Translation2d(2, 2),
+                new Translation2d(4, 3),
+                new Translation2d(2, 5));
     }
 }
