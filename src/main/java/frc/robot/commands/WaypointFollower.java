@@ -61,9 +61,9 @@ public class WaypointFollower extends CommandBase {
 
         // Create PID Controller
         controller = new HolonomicDriveController(
-                new PIDController(0.1, 0, 0.1),
-                new PIDController(0.1, 0, 0.1),
-                new ProfiledPIDController(1, 0, 0,
+                new PIDController(0.5, 0, 1),
+                new PIDController(0.5, 0, 1),
+                new ProfiledPIDController(0.5, 0, 1,
                 new TrapezoidProfile.Constraints(Constants.Simulation.MAX_ANGULAR_SPEED, Constants.Simulation.MAX_ANGULAR_ACCELERATION)));
         timer = new Timer();
 
@@ -81,20 +81,27 @@ public class WaypointFollower extends CommandBase {
 
     @Override
     public void execute() {
-        ChassisSpeeds speeds = controller.calculate(chassisSim.getRobotPose(), trajectory.sample(timer.get()), chassisSim.getRobotPose().getRotation());
-        SmartDashboard.putNumber("vx", speeds.vxMetersPerSecond);
-        SmartDashboard.putNumber("vy", speeds.vyMetersPerSecond);
-        SmartDashboard.putNumber("vomega", speeds.omegaRadiansPerSecond);
-        SmartDashboard.putBoolean("On Target", controller.atReference());
+        ChassisSpeeds speeds = controller.calculate(chassisSim.getRobotPose(), trajectory.sample(timer.get()), endingPose.getRotation());
+        SmartDashboard.putNumber("PID Target X", controller.getXController().getSetpoint());
+        SmartDashboard.putNumber("PID Target Y", controller.getYController().getSetpoint());
+        SmartDashboard.putNumber("PID Target Angle", controller.getThetaController().getGoal().position);
         chassisSim.driveFromRobotOrientedChassisSpeeds(speeds, false);
     }
 
     @Override
     public boolean isFinished() {
         Transform2d diff = chassisSim.getRobotPose().minus(endingPose);
-        return Math.abs(diff.getX()) <= tolerance.getX()
-                && Math.abs(diff.getY()) <= tolerance.getY()
-                && Math.abs(diff.getRotation().getDegrees()) <= tolerance.getRotation().getDegrees();
+        double xDiff = diff.getX();
+        double yDiff = diff.getY();
+        double rotDifDeg = diff.getRotation().getDegrees();
+
+        SmartDashboard.putNumber("X Diff to End Pose", xDiff);
+        SmartDashboard.putNumber("Y Diff to End Pose", yDiff);
+        SmartDashboard.putNumber("Degrees Diff to End Pose", rotDifDeg);
+
+        return Math.abs(xDiff) <= tolerance.getX()
+                && Math.abs(yDiff) <= tolerance.getY()
+                && Math.abs(rotDifDeg) <= tolerance.getRotation().getDegrees();
     }
 
     @Override

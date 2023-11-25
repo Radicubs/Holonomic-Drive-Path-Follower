@@ -32,7 +32,6 @@ public class HolonomicChassisSim extends SubsystemBase {
         targetYVelocity = fieldRelativeSpeeds.vyMetersPerSecond;
         targetAngVelocity = fieldRelativeSpeeds.omegaRadiansPerSecond;
         fieldOriented = true;
-        System.out.println(fieldRelativeSpeeds.vxMetersPerSecond + " " + fieldRelativeSpeeds.vyMetersPerSecond + " " + fieldRelativeSpeeds.omegaRadiansPerSecond);
     }
     public void driveFromRobotOrientedChassisSpeeds(ChassisSpeeds robotOrientedSpeeds){
         driveFromRobotOrientedChassisSpeeds(robotOrientedSpeeds, true);
