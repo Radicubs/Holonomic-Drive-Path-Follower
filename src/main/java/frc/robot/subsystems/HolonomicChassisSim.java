@@ -22,7 +22,7 @@ public class HolonomicChassisSim extends SubsystemBase {
     public HolonomicChassisSim(){
         field2d = new Field2d();
         SmartDashboard.putData(field2d);
-        robotPose = new Pose2d(1, 1, new Rotation2d());
+        robotPose = new Pose2d(1, 1, new Rotation2d(0));
         xVelocity = yVelocity = angVelocity = 0;
         fieldOriented = true;
     }
@@ -33,12 +33,14 @@ public class HolonomicChassisSim extends SubsystemBase {
         targetAngVelocity = fieldRelativeSpeeds.omegaRadiansPerSecond;
         fieldOriented = true;
     }
-
     public void driveFromRobotOrientedChassisSpeeds(ChassisSpeeds robotOrientedSpeeds){
+        driveFromRobotOrientedChassisSpeeds(robotOrientedSpeeds, true);
+    }
+    public void driveFromRobotOrientedChassisSpeeds(ChassisSpeeds robotOrientedSpeeds, boolean adjust){
         //robot oriented to field oriented conversion
         //velocity attributes of class are field oriented
         Translation2d robotOrientedSpeed = new Translation2d(robotOrientedSpeeds.vxMetersPerSecond, robotOrientedSpeeds.vyMetersPerSecond);
-        Translation2d fieldOrientedSpeed = robotOrientedSpeed.rotateBy(getAdjustedRobotAngle());
+        Translation2d fieldOrientedSpeed = robotOrientedSpeed.rotateBy(adjust ? getAdjustedRobotAngle() : robotPose.getRotation());
 
         targetXVelocity = fieldOrientedSpeed.getX();
         targetYVelocity = fieldOrientedSpeed.getY();

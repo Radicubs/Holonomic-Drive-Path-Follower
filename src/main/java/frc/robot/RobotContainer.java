@@ -8,6 +8,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -61,10 +62,9 @@ public class RobotContainer
     public Command getAutonomousCommand()
     {
         return new WaypointFollower(chassisSim,
-                new Rotation2d(120),
-                new Rotation2d(90),
+                //new Rotation2d(Units.degreesToRadians(90)),
+                //new Rotation2d(Units.degreesToRadians(90)),
                 new Translation2d(2, 2),
-                new Translation2d(4, 3),
-                new Translation2d(2, 5));
+                new Translation2d(4, 4));
     }
 }
