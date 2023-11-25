@@ -61,9 +61,9 @@ public class WaypointFollower extends CommandBase {
 
         // Create PID Controller
         controller = new HolonomicDriveController(
-                new PIDController(0.5, 0, 1),
-                new PIDController(0.5, 0, 1),
-                new ProfiledPIDController(0.5, 0, 1,
+                new PIDController(0.5, 0, 2),
+                new PIDController(0.5, 0, 2),
+                new ProfiledPIDController(0.5, 0, 2,
                 new TrapezoidProfile.Constraints(Constants.Simulation.MAX_ANGULAR_SPEED, Constants.Simulation.MAX_ANGULAR_ACCELERATION)));
         timer = new Timer();
 
@@ -81,10 +81,11 @@ public class WaypointFollower extends CommandBase {
 
     @Override
     public void execute() {
-        ChassisSpeeds speeds = controller.calculate(chassisSim.getRobotPose(), trajectory.sample(timer.get()), endingPose.getRotation());
+        Trajectory.State goal = trajectory.sample(timer.get());
+        ChassisSpeeds speeds = controller.calculate(chassisSim.getRobotPose(), trajectory.sample(timer.get()), goal.poseMeters.getRotation());
         SmartDashboard.putNumber("PID Target X", controller.getXController().getSetpoint());
         SmartDashboard.putNumber("PID Target Y", controller.getYController().getSetpoint());
-        SmartDashboard.putNumber("PID Target Angle", controller.getThetaController().getGoal().position);
+        SmartDashboard.putNumber("PID Target Angle", goal.poseMeters.getRotation().getDegrees());
         chassisSim.driveFromRobotOrientedChassisSpeeds(speeds, false);
     }
 
