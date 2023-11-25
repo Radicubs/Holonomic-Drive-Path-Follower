@@ -32,6 +32,7 @@ public class HolonomicChassisSim extends SubsystemBase {
         targetYVelocity = fieldRelativeSpeeds.vyMetersPerSecond;
         targetAngVelocity = fieldRelativeSpeeds.omegaRadiansPerSecond;
         fieldOriented = true;
+        System.out.println(fieldRelativeSpeeds.vxMetersPerSecond + " " + fieldRelativeSpeeds.vyMetersPerSecond + " " + fieldRelativeSpeeds.omegaRadiansPerSecond);
     }
     public void driveFromRobotOrientedChassisSpeeds(ChassisSpeeds robotOrientedSpeeds){
         driveFromRobotOrientedChassisSpeeds(robotOrientedSpeeds, true);
@@ -82,9 +83,9 @@ public class HolonomicChassisSim extends SubsystemBase {
         SmartDashboard.putNumber("Y Velocity", yVelocity);
         SmartDashboard.putNumber("Angular Velocity", angVelocity);
 
-        SmartDashboard.putNumber("Target X Velocity", xVelocity);
-        SmartDashboard.putNumber("Target Y Velocity", yVelocity);
-        SmartDashboard.putNumber("Target Angular Velocity", angVelocity);
+        SmartDashboard.putNumber("Target X Velocity", targetXVelocity);
+        SmartDashboard.putNumber("Target Y Velocity", targetYVelocity);
+        SmartDashboard.putNumber("Target Angular Velocity", targetAngVelocity);
         double deltaXVel = targetXVelocity - xVelocity;
         double deltaYVel = targetYVelocity - yVelocity;
 
@@ -92,8 +93,8 @@ public class HolonomicChassisSim extends SubsystemBase {
         // 1s / 20ms = 50
         double targetAcceleration = deltaCombinedVel * 50;
         if(targetAcceleration <= Constants.Simulation.MAX_ACCELERATION){
-            xVelocity = xVelocity;
-            yVelocity = yVelocity;
+            xVelocity = targetXVelocity;
+            yVelocity = targetYVelocity;
         }
         else{
             double scale = Constants.Simulation.MAX_ACCELERATION / targetAcceleration;

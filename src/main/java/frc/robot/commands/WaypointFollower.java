@@ -76,6 +76,7 @@ public class WaypointFollower extends CommandBase {
     public void initialize() {
         timer.start();
         chassisSim.setRobotPose(trajectory.getInitialPose());
+        SmartDashboard.putString("Status", "Running");
     }
 
     @Override
@@ -90,7 +91,7 @@ public class WaypointFollower extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        Transform2d diff = chassisSim.getRobotPose().minus(tolerance);
+        Transform2d diff = chassisSim.getRobotPose().minus(endingPose);
         return Math.abs(diff.getX()) <= tolerance.getX()
                 && Math.abs(diff.getY()) <= tolerance.getY()
                 && Math.abs(diff.getRotation().getDegrees()) <= tolerance.getRotation().getDegrees();
@@ -98,6 +99,8 @@ public class WaypointFollower extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        chassisSim.driveFromRobotOrientedChassisSpeeds(new ChassisSpeeds());
+        controller.setEnabled(false);
+        chassisSim.driveFromFieldOrientedChassisSpeeds(new ChassisSpeeds(0, 0, 0));
+        SmartDashboard.putString("Status", "Finished");
     }
 }
