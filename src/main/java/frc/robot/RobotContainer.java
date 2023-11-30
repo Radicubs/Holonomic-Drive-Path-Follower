@@ -32,6 +32,7 @@ public class RobotContainer
     private final HolonomicChassisSim chassisSim;
 
     public SendableChooser<Boolean> pathGeneration;
+    public SendableChooser<Boolean> pathWeaver;
     public RobotContainer()
     {
         joystick = new Joystick(0);
@@ -47,6 +48,14 @@ public class RobotContainer
         pathGeneration.addOption("Point Generation:Straight",false);
         SmartDashboard.putData("Path Generation", pathGeneration);
         this.pathGeneration = pathGeneration;
+
+        SendableChooser<Boolean> pathWeaver = new SendableChooser<>();
+        pathWeaver.setDefaultOption("Get Block", true);
+        pathWeaver.addOption("Charge Station", false);
+        SmartDashboard.putData("Path Selection", pathWeaver);
+        this.pathWeaver = pathWeaver;
+
+
         chassisSim.setDefaultCommand(new TeleOpControl(
                 chassisSim,
                 () -> joystick.getRawAxis(0),
@@ -72,7 +81,12 @@ public class RobotContainer
      */
     public Command getAutonomousCommand() throws IOException {
         if(pathGeneration.getSelected()){
-                return new WaypointFollower(chassisSim, "paths/Unnamed.wpilib.json");
+            if(pathWeaver.getSelected()){
+                return new WaypointFollower(chassisSim, "paths/getBlock.wpilib.json");
+            }else{
+                return new WaypointFollower(chassisSim, "paths/chargeStation.wpilib.json");
+            }
+
         }else{
             return new WaypointFollower(chassisSim,
                     new Rotation2d(Units.degreesToRadians(90)),
