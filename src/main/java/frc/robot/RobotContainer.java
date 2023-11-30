@@ -17,6 +17,8 @@ import frc.robot.commands.TeleOpControl;
 import frc.robot.commands.WaypointFollower;
 import frc.robot.subsystems.HolonomicChassisSim;
 
+import java.io.IOException;
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -59,13 +61,17 @@ public class RobotContainer
      *
      * @return the command to run in autonomous
      */
-    public Command getAutonomousCommand()
-    {
-        return new WaypointFollower(chassisSim,
-                new Rotation2d(Units.degreesToRadians(90)),
-                new Rotation2d(Units.degreesToRadians(90)),
-                new Translation2d(3, 1),
-                new Translation2d(2.75, 3),
-                new Translation2d(3.25, 5));
+    public Command getAutonomousCommand() {
+        try {
+            return new WaypointFollower(chassisSim,
+                    new Rotation2d(Units.degreesToRadians(90)),
+                    new Rotation2d(Units.degreesToRadians(90)),
+                    new Translation2d(3, 1),
+                    new Translation2d(2.75, 3),
+                    new Translation2d(3.25, 5));
+        }catch(IOException e) {
+            throw new RuntimeException("Pathweaver Path Not Found");
+        }
     }
+
 }

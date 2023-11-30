@@ -8,17 +8,18 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.*;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.HolonomicChassisSim;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,23 +27,55 @@ import java.util.stream.Stream;
 
 public class WaypointFollower extends CommandBase {
 
-    private final HolonomicChassisSim chassisSim;
-    private final Trajectory trajectory;
-    private final HolonomicDriveController controller;
-    private final Timer timer;
-    private final Pose2d startingPose, endingPose, tolerance;
+    private  HolonomicChassisSim chassisSim;
+    private  Rotation2d startingRot;
+    private  Rotation2d endingRot;
+    private  Translation2d[] waypoints;
 
-    public WaypointFollower(HolonomicChassisSim chassisSim, Translation2d ...waypoints){
+    //private final Trajectory trajectory;
+    private  HolonomicDriveController controller;
+    private  Timer timer;
+    private  Pose2d startingPose, endingPose, tolerance;
+
+    String trajectoryJSON = "paths/Unnamed.wpilib.json";
+    Trajectory trajectory = new Trajectory();
+
+
+    public WaypointFollower(HolonomicChassisSim chassisSim, Translation2d ...waypoints) throws IOException {
         this(chassisSim, new Rotation2d(), new Rotation2d(), waypoints);
     }
 
-    public WaypointFollower(HolonomicChassisSim chassisSim, Rotation2d startingRot, Rotation2d endingRot, Translation2d ...waypoints){
+    public WaypointFollower(HolonomicChassisSim chassisSim, Rotation2d startingRot, Rotation2d endingRot, Translation2d ...waypoints) throws IOException {
         if(waypoints.length < 2){
             System.out.println("bruhhhh wha da heeeeeelllllll aint no way blud tryna use 1 waypoint to generate a trajectory you goofy ahh go back to cs 1");
             this.cancel();
         }
         this.chassisSim = chassisSim;
+        this.startingRot = startingRot;
+        this.endingRot = endingRot;
+        this.waypoints = waypoints;
 
+        // Display Trajectory
+
+        chassisSim.displayTrajectory(trajectory);
+        addRequirements(chassisSim);
+
+        // Create PID Controller
+        controller = new HolonomicDriveController(
+                new PIDController(0,0 ,0),
+                new PIDController(0,0, 0),
+                new ProfiledPIDController(0, 0, 0,
+                        new TrapezoidProfile.Constraints(Constants.Simulation.MAX_ANGULAR_SPEED, Constants.Simulation.MAX_ANGULAR_ACCELERATION)));
+        timer = new Timer();
+
+        // Set Tolerance
+        this.tolerance = new Pose2d(new Translation2d(0.03, 0.03), new Rotation2d(Units.degreesToRadians(2)));
+        controller.setTolerance(tolerance);
+
+    }
+
+    public WaypointFollower() throws IOException {
+       this();
         // Generate Trajectory
         this.startingPose = new Pose2d(waypoints[0], startingRot);
         this.endingPose = new Pose2d(waypoints[waypoints.length - 1], endingRot);
@@ -53,24 +86,19 @@ public class WaypointFollower extends CommandBase {
                 midpoints,
                 endingPose,
                 new TrajectoryConfig(Constants.Simulation.MAX_AXIS_SPEED, Constants.Simulation.MAX_ACCELERATION));
-
-        // Display Trajectory
-
-        chassisSim.displayTrajectory(trajectory);
-        addRequirements(chassisSim);
-
-        // Create PID Controller
-        controller = new HolonomicDriveController(
-                new PIDController(0.5, 0, 2),
-                new PIDController(0.5, 0, 2),
-                new ProfiledPIDController(0.5, 0, 2,
-                new TrapezoidProfile.Constraints(Constants.Simulation.MAX_ANGULAR_SPEED, Constants.Simulation.MAX_ANGULAR_ACCELERATION)));
-        timer = new Timer();
-
-        // Set Tolerance
-        this.tolerance = new Pose2d(new Translation2d(0.03, 0.03), new Rotation2d(Units.degreesToRadians(2)));
-        controller.setTolerance(tolerance);
     }
+
+    public WaypointFollower() throws IOException {
+        this();
+        // Trajectory from Pathweaver
+
+        Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+        trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+
+        startingPose = trajectory.getInitialPose();
+        endingPose = trajectory.sample(trajectory.getTotalTimeSeconds()).poseMeters;
+    }
+
 
     @Override
     public void initialize() {
