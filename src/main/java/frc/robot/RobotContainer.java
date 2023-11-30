@@ -5,7 +5,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -19,6 +18,8 @@ import frc.robot.subsystems.HolonomicChassisSim;
 
 import java.io.IOException;
 
+import static java.lang.Boolean.TRUE;
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -29,6 +30,8 @@ public class RobotContainer
 {
     private final Joystick joystick;
     private final HolonomicChassisSim chassisSim;
+
+    public SendableChooser<Boolean> pathGeneration;
     public RobotContainer()
     {
         joystick = new Joystick(0);
@@ -38,6 +41,12 @@ public class RobotContainer
         isFieldOriented.addOption("Robot Oriented", false);
         SmartDashboard.putData("Control Mode", isFieldOriented);
 
+        SendableChooser<Boolean> pathGeneration = new SendableChooser<>();
+        pathGeneration.setDefaultOption("Pathweaver", true);
+        pathGeneration.addOption("Point Generation:Spline", false);
+        pathGeneration.addOption("Point Generation:Straight",false);
+        SmartDashboard.putData("Path Generation", pathGeneration);
+        this.pathGeneration = pathGeneration;
         chassisSim.setDefaultCommand(new TeleOpControl(
                 chassisSim,
                 () -> joystick.getRawAxis(0),
@@ -47,31 +56,31 @@ public class RobotContainer
         ));
         configureBindings();
     }
-    
-    
+
+
     /** Use this method to define your trigger->command mappings. */
     private void configureBindings()
     {
 
     }
-    
-    
+
+
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
      * @return the command to run in autonomous
      */
-    public Command getAutonomousCommand() {
-        try {
+    public Command getAutonomousCommand() throws IOException {
+        if(pathGeneration.getSelected()){
+                return new WaypointFollower(chassisSim, "paths/Unnamed.wpilib.json");
+        }else{
             return new WaypointFollower(chassisSim,
                     new Rotation2d(Units.degreesToRadians(90)),
                     new Rotation2d(Units.degreesToRadians(90)),
+                    TRUE,
                     new Translation2d(3, 1),
                     new Translation2d(2.75, 3),
                     new Translation2d(3.25, 5));
-        }catch(IOException e) {
-            throw new RuntimeException("Pathweaver Path Not Found");
         }
     }
-
 }

@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import java.io.IOException;
-import java.nio.file.Path;
 
 
 /**
@@ -50,7 +49,11 @@ public class    Robot extends TimedRobot
     @Override
     public void autonomousInit()
     {
-        autonomousCommand = robotContainer.getAutonomousCommand();
+        try {
+            autonomousCommand = robotContainer.getAutonomousCommand();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         if (autonomousCommand != null)
         {
             autonomousCommand.schedule();

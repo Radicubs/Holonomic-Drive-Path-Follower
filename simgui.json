@@ -10,7 +10,8 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Control Mode": "String Chooser",
-      "/SmartDashboard/Field": "Field2d"
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Path Generation": "String Chooser"
     }
   },
   "NetworkTables": {
