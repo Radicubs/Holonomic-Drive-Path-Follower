@@ -84,7 +84,7 @@ public class RobotContainer
             if(pathWeaver.getSelected()){
                 return new WaypointFollower(chassisSim, "paths/getBlock.wpilib.json");
             }else{
-                return new WaypointFollower(chassisSim, "paths/chargeStation.wpilib.json");
+                return new WaypointFollower(chassisSim, "paths/why.wpilib.json");
             }
 
         }else{
@@ -93,8 +93,8 @@ public class RobotContainer
                     new Rotation2d(Units.degreesToRadians(90)),
                     TRUE,
                     new Translation2d(3, 1),
-                    new Translation2d(2.75, 3),
-                    new Translation2d(3.25, 5));
+                    new Translation2d(6, 1),
+                    new Translation2d(6, 6));
         }
     }
 }
