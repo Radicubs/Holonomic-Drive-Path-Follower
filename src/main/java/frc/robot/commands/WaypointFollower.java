@@ -68,7 +68,7 @@ public class WaypointFollower extends CommandBase {
         timer = new Timer();
 
         // Set Tolerance
-        this.tolerance = new Pose2d(new Translation2d(0.03, 0.03), new Rotation2d(Units.degreesToRadians(2)));
+        this.tolerance = new Pose2d(new Translation2d(.5, .5), new Rotation2d(Units.degreesToRadians(2)));
         controller.setTolerance(tolerance);
     }
 

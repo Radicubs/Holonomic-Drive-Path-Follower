@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commands.StraightFollower;
 import frc.robot.commands.TeleOpControl;
 import frc.robot.commands.WaypointFollower;
 import frc.robot.subsystems.HolonomicChassisSim;
@@ -61,11 +62,6 @@ public class RobotContainer
      */
     public Command getAutonomousCommand()
     {
-        return new WaypointFollower(chassisSim,
-                new Rotation2d(Units.degreesToRadians(90)),
-                new Rotation2d(Units.degreesToRadians(90)),
-                new Translation2d(3, 1),
-                new Translation2d(2.75, 3),
-                new Translation2d(3.25, 5));
+        return new StraightFollower(chassisSim, Rotation2d.fromDegrees(90), new Translation2d(1, 1), new Translation2d(1, 3), new Translation2d(4, 3));
     }
 }

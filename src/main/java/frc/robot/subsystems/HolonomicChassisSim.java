@@ -12,7 +12,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class HolonomicChassisSim extends SubsystemBase {
+public class
+HolonomicChassisSim extends SubsystemBase {
     private double xVelocity, yVelocity, angVelocity;
     private double targetXVelocity, targetYVelocity, targetAngVelocity;
     private Field2d field2d;
@@ -53,7 +54,8 @@ public class HolonomicChassisSim extends SubsystemBase {
     public void displayTrajectory(Trajectory trajectory){
         field2d.getObject("trajectory").setTrajectory(trajectory);
     }
-    public void displayPoses(Pose2d ...pose2ds){
+    public void displayPoses(Pose2d ...pose2ds)
+    {
         field2d.getObject("poses").setPoses(pose2ds);
     }
 
