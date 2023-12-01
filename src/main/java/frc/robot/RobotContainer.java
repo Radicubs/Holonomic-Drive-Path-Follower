@@ -5,7 +5,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -17,6 +16,10 @@ import frc.robot.commands.TeleOpControl;
 import frc.robot.commands.WaypointFollower;
 import frc.robot.subsystems.HolonomicChassisSim;
 
+import java.io.IOException;
+
+import static java.lang.Boolean.TRUE;
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -27,6 +30,9 @@ public class RobotContainer
 {
     private final Joystick joystick;
     private final HolonomicChassisSim chassisSim;
+
+    public SendableChooser<Boolean> pathGeneration;
+    public SendableChooser<Boolean> pathWeaver;
     public RobotContainer()
     {
         joystick = new Joystick(0);
@@ -35,6 +41,20 @@ public class RobotContainer
         isFieldOriented.setDefaultOption("Field Oriented", true);
         isFieldOriented.addOption("Robot Oriented", false);
         SmartDashboard.putData("Control Mode", isFieldOriented);
+
+        SendableChooser<Boolean> pathGeneration = new SendableChooser<>();
+        pathGeneration.setDefaultOption("Pathweaver", true);
+        pathGeneration.addOption("Point Generation:Spline", false);
+        pathGeneration.addOption("Point Generation:Straight",false);
+        SmartDashboard.putData("Path Generation", pathGeneration);
+        this.pathGeneration = pathGeneration;
+
+        SendableChooser<Boolean> pathWeaver = new SendableChooser<>();
+        pathWeaver.setDefaultOption("Get Block", true);
+        pathWeaver.addOption("Charge Station", false);
+        SmartDashboard.putData("Path Selection", pathWeaver);
+        this.pathWeaver = pathWeaver;
+
 
         chassisSim.setDefaultCommand(new TeleOpControl(
                 chassisSim,
@@ -45,27 +65,36 @@ public class RobotContainer
         ));
         configureBindings();
     }
-    
-    
+
+
     /** Use this method to define your trigger->command mappings. */
     private void configureBindings()
     {
 
     }
-    
-    
+
+
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
      * @return the command to run in autonomous
      */
-    public Command getAutonomousCommand()
-    {
-        return new WaypointFollower(chassisSim,
-                Rotation2d.fromDegrees(90),
-                Rotation2d.fromDegrees(0),
-                new Translation2d(3, 1),
-                new Translation2d(3, 5),
-                new Translation2d(7, 5));
+    public Command getAutonomousCommand() throws IOException {
+        if(pathGeneration.getSelected()){
+            if(pathWeaver.getSelected()){
+                return new WaypointFollower(chassisSim, "paths/getBlock.wpilib.json");
+            }else{
+                return new WaypointFollower(chassisSim, "paths/why.wpilib.json");
+            }
+
+        }else{
+            return new WaypointFollower(chassisSim,
+                    Rotation2d.fromDegrees(90),
+                    Rotation2d.fromDegrees(90),
+                    TRUE,
+                    new Translation2d(3, 1),
+                    new Translation2d(6, 1),
+                    new Translation2d(6, 6));
+        }
     }
 }
