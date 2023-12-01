@@ -62,10 +62,10 @@ public class RobotContainer
     public Command getAutonomousCommand()
     {
         return new WaypointFollower(chassisSim,
-                new Rotation2d(Units.degreesToRadians(90)),
-                new Rotation2d(Units.degreesToRadians(90)),
+                Rotation2d.fromDegrees(90),
+                Rotation2d.fromDegrees(0),
                 new Translation2d(3, 1),
-                new Translation2d(2.75, 3),
-                new Translation2d(3.25, 5));
+                new Translation2d(3, 5),
+                new Translation2d(7, 5));
     }
 }

@@ -52,7 +52,7 @@ public class WaypointFollower extends CommandBase {
                 startingPose,
                 midpoints,
                 endingPose,
-                new TrajectoryConfig(Constants.Simulation.MAX_AXIS_SPEED, Constants.Simulation.MAX_ACCELERATION));
+                new TrajectoryConfig(Constants.Simulation.MAX_AXIS_SPEED/2, Constants.Simulation.MAX_ACCELERATION/2));
 
         // Display Trajectory
 
@@ -61,14 +61,14 @@ public class WaypointFollower extends CommandBase {
 
         // Create PID Controller
         controller = new HolonomicDriveController(
-                new PIDController(0.5, 0, 2),
-                new PIDController(0.5, 0, 2),
-                new ProfiledPIDController(0.5, 0, 2,
+                new PIDController(1, 0, 0),
+                new PIDController(1, 0, 0),
+                new ProfiledPIDController(2, 0, 1,
                 new TrapezoidProfile.Constraints(Constants.Simulation.MAX_ANGULAR_SPEED, Constants.Simulation.MAX_ANGULAR_ACCELERATION)));
         timer = new Timer();
 
         // Set Tolerance
-        this.tolerance = new Pose2d(new Translation2d(0.03, 0.03), new Rotation2d(Units.degreesToRadians(2)));
+        this.tolerance = new Pose2d(new Translation2d(0.03, 0.03), Rotation2d.fromDegrees(2));
         controller.setTolerance(tolerance);
     }
 
@@ -82,10 +82,16 @@ public class WaypointFollower extends CommandBase {
     @Override
     public void execute() {
         Trajectory.State goal = trajectory.sample(timer.get());
-        ChassisSpeeds speeds = controller.calculate(chassisSim.getRobotPose(), trajectory.sample(timer.get()), goal.poseMeters.getRotation());
+        ChassisSpeeds speeds = controller.calculate(chassisSim.getRobotPose(), trajectory.sample(timer.get()), endingPose.getRotation());
         SmartDashboard.putNumber("PID Target X", controller.getXController().getSetpoint());
         SmartDashboard.putNumber("PID Target Y", controller.getYController().getSetpoint());
         SmartDashboard.putNumber("PID Target Angle", goal.poseMeters.getRotation().getDegrees());
+        /*chassisSim.driveFromFieldOrientedChassisSpeeds(
+                new ChassisSpeeds(controller.getXController().getSetpoint(),
+                        controller.getYController().getSetpoint(),
+                        controller.getThetaController().getSetpoint().position)
+        );*/
+
         chassisSim.driveFromRobotOrientedChassisSpeeds(speeds, false);
     }
 
