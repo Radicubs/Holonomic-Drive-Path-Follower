@@ -22,10 +22,16 @@ public class StraightFollower extends SequentialCommandGroup {
         for(int i = 0; i < points.length - 1; i++) {
             Translation2d initial = points[i];
             Translation2d finalPos = points[i + 1];
+
+            int deg = 90;
+            if(i%2==1){
+                deg=0;
+            }
+
             addCommands(
                     new WaypointFollower(chassisSim,
-                            initial.getAngle(),
-                            finalPos.getAngle(),
+                            new Rotation2d(Units.degreesToRadians(deg)),
+                            new Rotation2d(Units.degreesToRadians(deg)),
                             initial,
                              finalPos));
         }

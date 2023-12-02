@@ -62,6 +62,6 @@ public class RobotContainer
      */
     public Command getAutonomousCommand()
     {
-        return new StraightFollower(chassisSim, Rotation2d.fromDegrees(90), new Translation2d(1, 1), new Translation2d(1, 3), new Translation2d(4, 3));
+        return new StraightFollower(chassisSim, Rotation2d.fromRadians(0), new Translation2d(1, 1), new Translation2d(1, 2), new Translation2d(3, 2),new Translation2d(3, 4));
     }
 }
