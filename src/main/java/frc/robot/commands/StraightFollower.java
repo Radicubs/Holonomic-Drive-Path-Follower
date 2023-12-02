@@ -21,7 +21,8 @@ public class StraightFollower extends SequentialCommandGroup {
 
         for(int i = 0; i < points.length - 1; i++) {
             Translation2d initial = points[i];
-            Translation2d finalPos = points[i + 1];
+            Translation2d middle = points[i+1];
+            Translation2d finalPos = points[i + 2];
 
             int deg = 90;
             if(i%2==1){
@@ -29,11 +30,21 @@ public class StraightFollower extends SequentialCommandGroup {
             }
 
             addCommands(
-                    new WaypointFollower(chassisSim,
-                            new Rotation2d(Units.degreesToRadians(deg)),
-                            new Rotation2d(Units.degreesToRadians(deg)),
+                    WaypointFollower(chassisSim,
+                            Rotation2d.fromDegrees(deg),
+                            Rotation2d.fromDegrees(deg),
+                            TRUE,
                             initial,
-                             finalPos));
+                            middle,
+                            finalPos));
+
         }
     }
 }
+
+/* new WaypointFollower(chassisSim,
+                            new Rotation2d(Units.degreesToRadians(deg)),
+                            new Rotation2d(Units.degreesToRadians(deg)),
+                            true,
+                            initial,
+                             finalPos));*/

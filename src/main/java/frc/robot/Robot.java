@@ -49,11 +49,8 @@ public class    Robot extends TimedRobot
     @Override
     public void autonomousInit()
     {
-        try {
-            autonomousCommand = robotContainer.getAutonomousCommand();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        autonomousCommand = robotContainer.getAutonomousCommand();
+
         if (autonomousCommand != null)
         {
             autonomousCommand.schedule();

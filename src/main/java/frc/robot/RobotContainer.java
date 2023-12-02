@@ -27,15 +27,14 @@ import static java.lang.Boolean.TRUE;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
-public class RobotContainer
-{
+public class RobotContainer {
     private final Joystick joystick;
     private final HolonomicChassisSim chassisSim;
 
     public SendableChooser<Boolean> pathGeneration;
     public SendableChooser<Boolean> pathWeaver;
-    public RobotContainer()
-    {
+
+    public RobotContainer() {
         joystick = new Joystick(0);
         chassisSim = new HolonomicChassisSim();
         SendableChooser<Boolean> isFieldOriented = new SendableChooser<>();
@@ -46,7 +45,7 @@ public class RobotContainer
         SendableChooser<Boolean> pathGeneration = new SendableChooser<>();
         pathGeneration.setDefaultOption("Pathweaver", true);
         pathGeneration.addOption("Point Generation:Spline", false);
-        pathGeneration.addOption("Point Generation:Straight",false);
+        pathGeneration.addOption("Point Generation:Straight", false);
         SmartDashboard.putData("Path Generation", pathGeneration);
         this.pathGeneration = pathGeneration;
 
@@ -68,9 +67,10 @@ public class RobotContainer
     }
 
 
-    /** Use this method to define your trigger->command mappings. */
-    private void configureBindings()
-    {
+    /**
+     * Use this method to define your trigger->command mappings.
+     */
+    private void configureBindings() {
 
     }
 
@@ -80,25 +80,9 @@ public class RobotContainer
      *
      * @return the command to run in autonomous
      */
-    public Command getAutonomousCommand() throws IOException {
-        if(pathGeneration.getSelected()){
-            if(pathWeaver.getSelected()){
-                return new WaypointFollower(chassisSim, "paths/getBlock.wpilib.json");
-            }else{
-                return new WaypointFollower(chassisSim, "paths/why.wpilib.json");
-            }
-
-        }else{
-            return new WaypointFollower(chassisSim,
-                    Rotation2d.fromDegrees(90),
-                    Rotation2d.fromDegrees(90),
-                    TRUE,
-                    new Translation2d(3, 1),
-                    new Translation2d(6, 1),
-                    new Translation2d(6, 6));
-        }
     public Command getAutonomousCommand()
     {
-        return new StraightFollower(chassisSim, Rotation2d.fromRadians(0), new Translation2d(1, 1), new Translation2d(1, 2), new Translation2d(3, 2),new Translation2d(3, 4));
+        return new StraightFollower(chassisSim, Rotation2d.fromRadians(0), new Translation2d(1, 1), new Translation2d(1, 2), new Translation2d(3, 2), new Translation2d(3, 4));
     }
+
 }
