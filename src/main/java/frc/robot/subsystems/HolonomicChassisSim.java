@@ -18,21 +18,18 @@ HolonomicChassisSim extends SubsystemBase {
     private double targetXVelocity, targetYVelocity, targetAngVelocity;
     private Field2d field2d;
     private Pose2d robotPose;
-    boolean fieldOriented;
 
     public HolonomicChassisSim(){
         field2d = new Field2d();
         SmartDashboard.putData(field2d);
         robotPose = new Pose2d(1, 1, new Rotation2d(0));
         xVelocity = yVelocity = angVelocity = 0;
-        fieldOriented = true;
     }
 
     public void driveFromFieldOrientedChassisSpeeds(ChassisSpeeds fieldRelativeSpeeds){
         targetXVelocity = fieldRelativeSpeeds.vxMetersPerSecond;
         targetYVelocity = fieldRelativeSpeeds.vyMetersPerSecond;
         targetAngVelocity = fieldRelativeSpeeds.omegaRadiansPerSecond;
-        fieldOriented = true;
     }
     public void driveFromRobotOrientedChassisSpeeds(ChassisSpeeds robotOrientedSpeeds){
         driveFromRobotOrientedChassisSpeeds(robotOrientedSpeeds, true);
@@ -48,7 +45,6 @@ HolonomicChassisSim extends SubsystemBase {
 
         //rotation is rotation, even if you rotate the rotation :)
         targetAngVelocity = robotOrientedSpeeds.omegaRadiansPerSecond;
-        fieldOriented = true;
     }
 
     public void displayTrajectory(Trajectory trajectory){
