@@ -52,11 +52,11 @@ public class WaypointFollower extends CommandBase {
         timer = new Timer();
 
         // Set Tolerance
-        this.tolerance = new Pose2d(new Translation2d(0.03, 0.03), new Rotation2d(Units.degreesToRadians(2)));
+        this.tolerance = new Pose2d(new Translation2d(0.03, 0.03), Rotation2d.fromDegrees(2));
         controller.setTolerance(tolerance);
     }
 
-    public WaypointFollower(HolonomicChassisSim chassis, Rotation2d startingRotation, Rotation2d endingRotation, boolean spline, Translation2d... waypoints) {
+    public WaypointFollower(HolonomicChassisSim chassis, Rotation2d startingRotation, Rotation2d endingRotation, Translation2d... waypoints) {
         this(chassis, startingRotation, endingRotation);
         if(waypoints.length < 2){
             System.out.println("bruhhhh wha da heeeeeelllllll aint no way blud tryna use 1 waypoint to generate a trajectory you goofy ahh go back to cs 1");
@@ -67,18 +67,12 @@ public class WaypointFollower extends CommandBase {
         this.startingPose = new Pose2d(waypoints[0], startingRotation);
         this.endingPose = new Pose2d(waypoints[waypoints.length - 1], endingRotation);
 
-        if(spline) {
             List<Translation2d> midpoints = Arrays.asList(Arrays.copyOfRange(waypoints, 1, waypoints.length - 1));
             trajectory = TrajectoryGenerator.generateTrajectory(
                     startingPose,
                     midpoints,
                     endingPose,
                     new TrajectoryConfig(Constants.Simulation.MAX_PATH_SPEED, Constants.Simulation.MAX_PATH_ACCELERATION));
-        }
-
-        else {
-            // do not spline code
-        }
 
         chassis.displayTrajectory(trajectory);
     }
@@ -117,7 +111,6 @@ public class WaypointFollower extends CommandBase {
 
     @Override
     public void execute() {
-        Trajectory.State goal = trajectory.sample(timer.get());
         ChassisSpeeds speeds = controller.calculate(chassis.getRobotPose(), trajectory.sample(timer.get()), endingPose.getRotation());
         SmartDashboard.putNumber("PID Target X", controller.getXController().getSetpoint());
         SmartDashboard.putNumber("PID Target Y", controller.getYController().getSetpoint());

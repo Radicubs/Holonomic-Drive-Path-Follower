@@ -5,20 +5,19 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commands.StraightFollower;
 import frc.robot.commands.TeleOpControl;
 import frc.robot.commands.WaypointFollower;
 import frc.robot.subsystems.HolonomicChassisSim;
 
 import java.io.IOException;
-
-import static java.lang.Boolean.TRUE;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -31,7 +30,7 @@ public class RobotContainer
     private final Joystick joystick;
     private final HolonomicChassisSim chassisSim;
 
-    public SendableChooser<Boolean> pathGeneration;
+    public SendableChooser<Integer> pathGeneration;
     public SendableChooser<Boolean> pathWeaver;
     public RobotContainer()
     {
@@ -42,10 +41,10 @@ public class RobotContainer
         isFieldOriented.addOption("Robot Oriented", false);
         SmartDashboard.putData("Control Mode", isFieldOriented);
 
-        SendableChooser<Boolean> pathGeneration = new SendableChooser<>();
-        pathGeneration.setDefaultOption("Pathweaver", true);
-        pathGeneration.addOption("Point Generation:Spline", false);
-        pathGeneration.addOption("Point Generation:Straight",false);
+        SendableChooser<Integer> pathGeneration = new SendableChooser<>();
+        pathGeneration.setDefaultOption("Pathweaver", 0);
+        pathGeneration.addOption("Point Generation:Spline", 1);
+        pathGeneration.addOption("Point Generation:Straight",2);
         SmartDashboard.putData("Path Generation", pathGeneration);
         this.pathGeneration = pathGeneration;
 
@@ -80,21 +79,26 @@ public class RobotContainer
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() throws IOException {
-        if(pathGeneration.getSelected()){
+        if(pathGeneration.getSelected() == 0){
             if(pathWeaver.getSelected()){
                 return new WaypointFollower(chassisSim, "paths/getBlock.wpilib.json");
             }else{
                 return new WaypointFollower(chassisSim, "paths/why.wpilib.json");
             }
 
-        }else{
+        } else if(pathGeneration.getSelected() == 1) {
             return new WaypointFollower(chassisSim,
                     Rotation2d.fromDegrees(90),
                     Rotation2d.fromDegrees(90),
-                    TRUE,
                     new Translation2d(3, 1),
                     new Translation2d(6, 1),
                     new Translation2d(6, 6));
+        }else{
+            return new StraightFollower(chassisSim,
+                    new Pose2d(new Translation2d(3, 1),Rotation2d.fromDegrees(25)),
+                    new Pose2d(new Translation2d(6, 1),Rotation2d.fromDegrees(25)),
+                    new Pose2d(new Translation2d(8, 6),Rotation2d.fromDegrees(25)));
         }
     }
 }
+

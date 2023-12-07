@@ -1,18 +1,11 @@
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.HolonomicChassisSim;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -43,6 +36,7 @@ public class TeleOpControl extends CommandBase {
 
     @Override
     public void execute() {
+        SmartDashboard.putNumber("Robot Pose", chassisSim.getRobotPose().getX());
         ChassisSpeeds speeds = new ChassisSpeeds(
                 xInput.getAsDouble() * Constants.Simulation.MAX_AXIS_SPEED,
                 yInput.getAsDouble() * Constants.Simulation.MAX_AXIS_SPEED,
