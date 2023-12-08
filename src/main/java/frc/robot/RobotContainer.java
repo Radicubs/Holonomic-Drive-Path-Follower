@@ -12,9 +12,9 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commands.SplineFollower;
 import frc.robot.commands.StraightFollower;
 import frc.robot.commands.TeleOpControl;
-import frc.robot.commands.WaypointFollower;
 import frc.robot.subsystems.HolonomicChassisSim;
 
 import java.io.IOException;
@@ -81,13 +81,13 @@ public class RobotContainer
     public Command getAutonomousCommand() throws IOException {
         if(pathGeneration.getSelected() == 0){
             if(pathWeaver.getSelected()){
-                return new WaypointFollower(chassisSim, "paths/getBlock.wpilib.json");
+                return new SplineFollower(chassisSim, "paths/getBlock.wpilib.json");
             }else{
-                return new WaypointFollower(chassisSim, "paths/why.wpilib.json");
+                return new SplineFollower(chassisSim, "paths/why.wpilib.json");
             }
 
         } else if(pathGeneration.getSelected() == 1) {
-            return new WaypointFollower(chassisSim,
+            return new SplineFollower(chassisSim,
                     Rotation2d.fromDegrees(90),
                     Rotation2d.fromDegrees(90),
                     new Translation2d(3, 1),

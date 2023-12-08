@@ -22,7 +22,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
-public class WaypointFollower extends CommandBase {
+public class SplineFollower extends CommandBase {
 
     private  HolonomicChassisSim chassis;
     private  Rotation2d startingRotation;
@@ -36,7 +36,7 @@ public class WaypointFollower extends CommandBase {
 
     Trajectory trajectory = new Trajectory();
 
-    private WaypointFollower(HolonomicChassisSim chassis, Rotation2d startingRotation, Rotation2d endingRotation) {
+    private SplineFollower(HolonomicChassisSim chassis, Rotation2d startingRotation, Rotation2d endingRotation) {
         this.chassis = chassis;
         this.startingRotation = startingRotation;
         this.endingRotation = endingRotation;
@@ -56,7 +56,7 @@ public class WaypointFollower extends CommandBase {
         controller.setTolerance(tolerance);
     }
 
-    public WaypointFollower(HolonomicChassisSim chassis, Rotation2d startingRotation, Rotation2d endingRotation, Translation2d... waypoints) {
+    public SplineFollower(HolonomicChassisSim chassis, Rotation2d startingRotation, Rotation2d endingRotation, Translation2d... waypoints) {
         this(chassis, startingRotation, endingRotation);
         if(waypoints.length < 2){
             System.out.println("bruhhhh wha da heeeeeelllllll aint no way blud tryna use 1 waypoint to generate a trajectory you goofy ahh go back to cs 1");
@@ -77,7 +77,7 @@ public class WaypointFollower extends CommandBase {
         chassis.displayTrajectory(trajectory);
     }
 
-    public WaypointFollower(HolonomicChassisSim chassis, String trajectoryString) throws IOException {
+    public SplineFollower(HolonomicChassisSim chassis, String trajectoryString) throws IOException {
         this.chassis = chassis;
         addRequirements(this.chassis);
         Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryString);
