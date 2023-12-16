@@ -12,10 +12,9 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.SplineFollower;
-import frc.robot.commands.StraightFollower;
+import frc.robot.commands.PathGenerator;
 import frc.robot.commands.TeleOpControl;
-import frc.robot.subsystems.HolonomicChassisSim;
+import frc.robot.subsystems.SimulationChassis;
 
 import java.io.IOException;
 
@@ -28,14 +27,13 @@ import java.io.IOException;
 public class RobotContainer
 {
     private final Joystick joystick;
-    private final HolonomicChassisSim chassisSim;
-
+    private final SimulationChassis chassisSim;
     public SendableChooser<Integer> pathGeneration;
-    public SendableChooser<Boolean> pathWeaver;
+
     public RobotContainer()
     {
         joystick = new Joystick(0);
-        chassisSim = new HolonomicChassisSim();
+        chassisSim = new SimulationChassis();
         SendableChooser<Boolean> isFieldOriented = new SendableChooser<>();
         isFieldOriented.setDefaultOption("Field Oriented", true);
         isFieldOriented.addOption("Robot Oriented", false);
@@ -43,22 +41,16 @@ public class RobotContainer
 
         SendableChooser<Integer> pathGeneration = new SendableChooser<>();
         pathGeneration.setDefaultOption("Pathweaver", 0);
-        pathGeneration.addOption("Point Generation:Spline", 1);
-        pathGeneration.addOption("Point Generation:Straight",2);
+        pathGeneration.addOption("Spline Point Generation", 1);
+        pathGeneration.addOption("Straight Point Generation",2);
         SmartDashboard.putData("Path Generation", pathGeneration);
         this.pathGeneration = pathGeneration;
-
-        SendableChooser<Boolean> pathWeaver = new SendableChooser<>();
-        pathWeaver.setDefaultOption("Get Block", true);
-        pathWeaver.addOption("Charge Station", false);
-        SmartDashboard.putData("Path Selection", pathWeaver);
-        this.pathWeaver = pathWeaver;
 
 
         chassisSim.setDefaultCommand(new TeleOpControl(
                 chassisSim,
-                () -> joystick.getRawAxis(0),
-                () -> -joystick.getRawAxis(1),
+                () -> joystick.getRawAxis(1),
+                () -> -joystick.getRawAxis(0),
                 () -> joystick.getRawAxis(2),
                 isFieldOriented::getSelected
         ));
@@ -80,21 +72,15 @@ public class RobotContainer
      */
     public Command getAutonomousCommand() throws IOException {
         if(pathGeneration.getSelected() == 0){
-            if(pathWeaver.getSelected()){
-                return new SplineFollower(chassisSim, "paths/getBlock.wpilib.json");
-            }else{
-                return new SplineFollower(chassisSim, "paths/why.wpilib.json");
-            }
+            return PathGenerator.fromPathweaverJSON(chassisSim, "paths/examplePath.wpilib.json");
 
         } else if(pathGeneration.getSelected() == 1) {
-            return new SplineFollower(chassisSim,
-                    Rotation2d.fromDegrees(90),
-                    Rotation2d.fromDegrees(90),
-                    new Translation2d(3, 1),
-                    new Translation2d(6, 1),
-                    new Translation2d(6, 6));
+            return PathGenerator.fromSplinePoints(chassisSim,
+                    new Pose2d(new Translation2d(3, 1),Rotation2d.fromDegrees(25)),
+                    new Pose2d(new Translation2d(6, 1),Rotation2d.fromDegrees(25)),
+                    new Pose2d(new Translation2d(8, 6),Rotation2d.fromDegrees(25)));
         }else{
-            return new StraightFollower(chassisSim,
+            return PathGenerator.fromStraightPoints(chassisSim,
                     new Pose2d(new Translation2d(3, 1),Rotation2d.fromDegrees(25)),
                     new Pose2d(new Translation2d(6, 1),Rotation2d.fromDegrees(25)),
                     new Pose2d(new Translation2d(8, 6),Rotation2d.fromDegrees(25)));

@@ -2,42 +2,40 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.HolonomicPathFollower;
 
-public class HolonomicChassisSim extends SubsystemBase {
+public class SimulationChassis extends HolonomicPathFollower {
     private double xVelocity, yVelocity, angVelocity;
     private double targetXVelocity, targetYVelocity, targetAngVelocity;
     private Field2d field2d;
     private Pose2d robotPose;
 
-    public HolonomicChassisSim(){
+    public SimulationChassis(){
         field2d = new Field2d();
         SmartDashboard.putData(field2d);
         robotPose = new Pose2d(1, 1, new Rotation2d(0));
         xVelocity = yVelocity = angVelocity = 0;
     }
 
+    @Override
     public void driveFromFieldOrientedChassisSpeeds(ChassisSpeeds fieldRelativeSpeeds){
         targetXVelocity = fieldRelativeSpeeds.vxMetersPerSecond;
         targetYVelocity = fieldRelativeSpeeds.vyMetersPerSecond;
         targetAngVelocity = fieldRelativeSpeeds.omegaRadiansPerSecond;
     }
+
     public void driveFromRobotOrientedChassisSpeeds(ChassisSpeeds robotOrientedSpeeds){
-        driveFromRobotOrientedChassisSpeeds(robotOrientedSpeeds, true);
-    }
-    public void driveFromRobotOrientedChassisSpeeds(ChassisSpeeds robotOrientedSpeeds, boolean adjust){
         //robot oriented to field oriented conversion
         //velocity attributes of class are field oriented
         Translation2d robotOrientedSpeed = new Translation2d(robotOrientedSpeeds.vxMetersPerSecond, robotOrientedSpeeds.vyMetersPerSecond);
-        Translation2d fieldOrientedSpeed = robotOrientedSpeed.rotateBy(adjust ? getAdjustedRobotAngle() : robotPose.getRotation());
+        Translation2d fieldOrientedSpeed = robotOrientedSpeed.rotateBy(robotPose.getRotation());
 
         targetXVelocity = fieldOrientedSpeed.getX();
         targetYVelocity = fieldOrientedSpeed.getY();
@@ -68,9 +66,6 @@ public class HolonomicChassisSim extends SubsystemBase {
         this.robotPose = robotPose;
     }
 
-    public Rotation2d getAdjustedRobotAngle(){
-        return robotPose.getRotation().minus(new Rotation2d(Units.degreesToRadians(90)));
-    }
 
     @Override
     public void simulationPeriodic() {
@@ -87,6 +82,8 @@ public class HolonomicChassisSim extends SubsystemBase {
         double deltaCombinedVel = Math.sqrt(Math.pow(deltaXVel, 2) + Math.pow(deltaYVel, 2));
         // 1s / 20ms = 50
         double targetAcceleration = deltaCombinedVel * 50;
+
+        //Ensure acceleration does not exceed MAX_ACCELERATION for lin & rot movement
         if(targetAcceleration <= Constants.Simulation.MAX_ACCELERATION){
             xVelocity = targetXVelocity;
             yVelocity = targetYVelocity;
@@ -108,20 +105,10 @@ public class HolonomicChassisSim extends SubsystemBase {
             angVelocity += deltaAngVelocity * scale;
         }
 
-        // 20ms/ 1s = 1 / 50
-        //converting via chassisspeeds.fromfieldorientedspeeds was leading to issues... soo....
-        //manually add the velocity to the field relative coords of the
         Translation2d velocitySum = robotPose.getTranslation().plus(new Translation2d(xVelocity / 50, yVelocity / 50));
         Rotation2d angularVelocitySum = robotPose.getRotation().plus(new Rotation2d(angVelocity / 50));
         robotPose = new Pose2d(velocitySum, angularVelocitySum);
 
-
-        /*
-        //add the velocities to the pose relative to the pose
-        Translation2d translationChange = new Translation2d(xVelocity / 50, yVelocity / 50);
-        Rotation2d angleChange = new Rotation2d(angVelocity / 50);
-        robotPose = robotPose.plus(new Transform2d(translationChange, angleChange));
-        */
         field2d.setRobotPose(robotPose);
     }
 }

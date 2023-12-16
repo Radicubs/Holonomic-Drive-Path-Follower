@@ -17,17 +17,20 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
-import frc.robot.subsystems.HolonomicChassisSim;
+import frc.robot.HolonomicPathFollower;
+import frc.robot.subsystems.SimulationChassis;
 
+import java.sql.SQLOutput;
 import java.util.List;
 
 import static java.lang.Math.atan;
 
 public class MoveToPose extends CommandBase {
 
-    private  HolonomicDriveController controller;
-    private  HolonomicChassisSim chassis;
+    private HolonomicDriveController controller;
+    private HolonomicPathFollower chassis;
     private Pose2d endPose;
     private Trajectory trajectory;
 
@@ -39,19 +42,13 @@ public class MoveToPose extends CommandBase {
 
     private Pose2d startPose;
 
-    public MoveToPose(HolonomicChassisSim chassis, Pose2d endPose) {
-        timer = new Timer();
-        addRequirements(chassis);
-        this.tolerance = new Pose2d(new Translation2d(.03,.03), Rotation2d.fromDegrees(2));
+    public MoveToPose(HolonomicPathFollower chassis, Pose2d endPose, HolonomicDriveController controller, Pose2d tolerance) {
         this.chassis = chassis;
         this.endPose = endPose;
-        controller = new HolonomicDriveController(
-                new PIDController(2,0 ,0),
-                new PIDController(2,0, 0),
-                new ProfiledPIDController(2, 0, 0,
-                        new TrapezoidProfile.Constraints(Constants.Simulation.MAX_PATH_ANGULAR_SPEED, Constants.Simulation.MAX_PATH_ANGULAR_ACCELERATION)));
+        this.controller = controller;
+        this.tolerance = tolerance;
 
-
+        timer = new Timer();
     }
 
     @Override
@@ -59,16 +56,19 @@ public class MoveToPose extends CommandBase {
         xDiff = endPose.getX() - chassis.getRobotPose().getX();
         yDiff = endPose.getY() - chassis.getRobotPose().getY();
         hypoAngle = Units.radiansToDegrees(atan(yDiff/xDiff));
-        SmartDashboard.putString("Status","Running");
+        SmartDashboard.putString("Status", "Running");
         timer.start();
         try {
             trajectory = TrajectoryGenerator.generateTrajectory(
                     new Pose2d(chassis.getRobotPose().getTranslation(), Rotation2d.fromDegrees(hypoAngle)),
                     List.of(),
                     new Pose2d(endPose.getTranslation(), Rotation2d.fromDegrees(hypoAngle)),
-                    new TrajectoryConfig(Constants.Simulation.MAX_PATH_SPEED, Constants.Simulation.MAX_PATH_ACCELERATION));
-        }catch (SplineParameterizer.MalformedSplineException e ){
-            System.out.println("Already at end position");
+                    new TrajectoryConfig(Constants.TrajectoryFollower.MAX_PATH_SPEED, Constants.TrajectoryFollower.MAX_PATH_ACCELERATION));
+        }catch (SplineParameterizer.MalformedSplineException e){
+            System.out.println("Unable to generate straight trajectory to point");
+            System.out.println("This may be because the robot is already at the endpoint");
+            System.out.println(e);
+            this.cancel();
         }
         chassis.displayTrajectory(trajectory);
     }
@@ -76,7 +76,7 @@ public class MoveToPose extends CommandBase {
     @Override
     public void execute() {
         ChassisSpeeds speeds = controller.calculate(chassis.getRobotPose(), trajectory.sample(timer.get()), endPose.getRotation());
-        chassis.driveFromRobotOrientedChassisSpeeds(speeds, false);
+        chassis.driveFromRobotOrientedChassisSpeeds(speeds);
     }
 
     @Override
@@ -85,9 +85,6 @@ public class MoveToPose extends CommandBase {
         double xDiff = diff.getX();
         double yDiff = diff.getY();
         double rotDifDeg = diff.getRotation().getDegrees();
-
-        SmartDashboard.putNumber("Robot Pose", chassis.getRobotPose().getX());
-        SmartDashboard.putNumber("Ending Pose", endPose.getX());
 
         SmartDashboard.putNumber("X Diff to End Pose", xDiff);
         SmartDashboard.putNumber("Y Diff to End Pose", yDiff);
@@ -100,9 +97,8 @@ public class MoveToPose extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        controller.setEnabled(false);
         chassis.driveFromFieldOrientedChassisSpeeds(new ChassisSpeeds(0, 0, 0));
-        SmartDashboard.putString("Status","Finished");
+        SmartDashboard.putString("Status", "Finished");
     }
 }
 

@@ -4,18 +4,18 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.HolonomicChassisSim;
+import frc.robot.subsystems.SimulationChassis;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class TeleOpControl extends CommandBase {
-    HolonomicChassisSim chassisSim;
+    SimulationChassis chassisSim;
     DoubleSupplier xInput;
     DoubleSupplier yInput;
     DoubleSupplier rotInput;
     BooleanSupplier isFieldOriented;
-    public TeleOpControl(HolonomicChassisSim chassisSim, DoubleSupplier xInput, DoubleSupplier yInput, DoubleSupplier rotInput, BooleanSupplier isFieldOriented){
+    public TeleOpControl(SimulationChassis chassisSim, DoubleSupplier xInput, DoubleSupplier yInput, DoubleSupplier rotInput, BooleanSupplier isFieldOriented){
         this.chassisSim = chassisSim;
         this.xInput = xInput;
         this.yInput = yInput;
@@ -38,9 +38,9 @@ public class TeleOpControl extends CommandBase {
     public void execute() {
         SmartDashboard.putNumber("Robot Pose", chassisSim.getRobotPose().getX());
         ChassisSpeeds speeds = new ChassisSpeeds(
-                xInput.getAsDouble() * Constants.Simulation.MAX_AXIS_SPEED,
-                yInput.getAsDouble() * Constants.Simulation.MAX_AXIS_SPEED,
-                rotInput.getAsDouble() * Constants.Simulation.MAX_ANGULAR_SPEED
+                xInput.getAsDouble() * Constants.TrajectoryFollower.MAX_PATH_SPEED,
+                yInput.getAsDouble() * Constants.TrajectoryFollower.MAX_PATH_SPEED,
+                rotInput.getAsDouble() * Constants.TrajectoryFollower.MAX_PATH_ANGULAR_SPEED
         );
         if(isFieldOriented.getAsBoolean()){
             chassisSim.driveFromFieldOrientedChassisSpeeds(speeds);
