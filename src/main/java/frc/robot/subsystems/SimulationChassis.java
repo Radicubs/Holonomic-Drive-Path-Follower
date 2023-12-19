@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.HolonomicPathFollower;
 
-public class SimulationChassis extends HolonomicPathFollower {
+public class SimulationChassis extends SubsystemBase implements HolonomicPathFollower {
     private double xVelocity, yVelocity, angVelocity;
     private double targetXVelocity, targetYVelocity, targetAngVelocity;
     private Field2d field2d;

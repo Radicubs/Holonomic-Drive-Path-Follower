@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.HolonomicPathFollower;
 import frc.robot.subsystems.SimulationChassis;
@@ -42,7 +43,7 @@ public class MoveToPose extends CommandBase {
 
     private Pose2d startPose;
 
-    public MoveToPose(HolonomicPathFollower chassis, Pose2d endPose, HolonomicDriveController controller, Pose2d tolerance) {
+    public <T extends SubsystemBase & HolonomicPathFollower> MoveToPose(T chassis, Pose2d endPose, HolonomicDriveController controller, Pose2d tolerance) {
         this.chassis = chassis;
         this.endPose = endPose;
         this.controller = controller;
@@ -75,6 +76,7 @@ public class MoveToPose extends CommandBase {
 
     @Override
     public void execute() {
+        Trajectory.State state = trajectory.sample(timer.get());
         ChassisSpeeds speeds = controller.calculate(chassis.getRobotPose(), trajectory.sample(timer.get()), endPose.getRotation());
         chassis.driveFromRobotOrientedChassisSpeeds(speeds);
     }

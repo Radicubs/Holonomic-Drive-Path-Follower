@@ -9,10 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.spline.SplineParameterizer;
 import edu.wpi.first.math.trajectory.*;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.Constants;
 import frc.robot.HolonomicPathFollower;
 import frc.robot.Constants.TrajectoryFollower;
@@ -32,11 +29,11 @@ public class PathGenerator {
     private static Pose2d tolerance = new Pose2d(new Translation2d(TrajectoryFollower.xToleranceMeters, TrajectoryFollower.yToleranceMeters),
             Rotation2d.fromDegrees(TrajectoryFollower.rotToleranceDeg));
 
-    public static CommandBase fromPathweaverJSON(HolonomicPathFollower chassis, String jsonFilePath){
+    public static <T extends SubsystemBase & HolonomicPathFollower> CommandBase fromPathweaverJSON(T chassis, boolean followTrajectoryHeading, String jsonFilePath){
         try{
             Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(jsonFilePath);
             Trajectory trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-            return new FollowTrajectory(chassis, trajectory, controller, tolerance);
+            return new FollowTrajectory(chassis, trajectory, controller, tolerance, followTrajectoryHeading);
         }
         catch(IOException e){
             System.out.println("File \"" + jsonFilePath + "\" not found");
@@ -49,38 +46,40 @@ public class PathGenerator {
         }
     }
 
-    public static CommandBase fromSplinePoints(HolonomicPathFollower chassis, Pose2d ...waypoints){
+    public static <T extends SubsystemBase & HolonomicPathFollower> CommandBase fromSplinePoints(T chassis, boolean followTrajectoryHeading, Pose2d ...waypoints){
         try {
             Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
                     Arrays.asList(waypoints),
                     new TrajectoryConfig(TrajectoryFollower.MAX_PATH_SPEED, TrajectoryFollower.MAX_PATH_ACCELERATION));
-            return new FollowTrajectory(chassis, trajectory, controller, tolerance);
+            return new FollowTrajectory(chassis, trajectory, controller, tolerance, followTrajectoryHeading);
         } catch (SplineParameterizer.MalformedSplineException e) {
             System.out.println("Unable to generate spline trajectory");
+            System.out.println("This is often caused by listing the same point twice");
             System.out.println(e);
             return new InstantCommand();
         }
     }
 
-    public static CommandBase fromSimplifiedSplinePoints(HolonomicPathFollower chassis, Pose2d startingPose, Pose2d endingPose, Translation2d ...midpoints){
+    public static <T extends SubsystemBase & HolonomicPathFollower> CommandBase fromSimplifiedSplinePoints(T chassis, boolean followTrajectoryHeading, Pose2d startingPose, Pose2d endingPose, Translation2d ...midpoints){
         try {
             Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
                     startingPose,
                     Arrays.asList(midpoints),
                     endingPose,
                     new TrajectoryConfig(TrajectoryFollower.MAX_PATH_SPEED, TrajectoryFollower.MAX_PATH_ACCELERATION));
-            return new FollowTrajectory(chassis, trajectory, controller, tolerance);
+            return new FollowTrajectory(chassis, trajectory, controller, tolerance, followTrajectoryHeading);
         } catch (Exception e) {
             System.out.println("Unable to generate simplified spline trajectory");
+            System.out.println("This is often caused by listing the same point twice");
             System.out.println(e);
             return new InstantCommand();
         }
     }
 
-    public static CommandBase fromStraightPoints(HolonomicPathFollower chassis, Pose2d ...waypoints){
-        Command[] commands = new Command[waypoints.length-1];
-        for(int i=1; i< waypoints.length; i++){
-            commands[i-1] = new MoveToPose(chassis, waypoints[i], controller, tolerance);
+    public static <T extends SubsystemBase & HolonomicPathFollower> CommandBase fromStraightPoints(T chassis, Pose2d ...waypoints){
+        Command[] commands = new Command[waypoints.length];
+        for(int i=0; i< waypoints.length; i++){
+            commands[i] = new MoveToPose(chassis, waypoints[i], controller, tolerance);
         }
         return new SequentialCommandGroup(commands);
     }
