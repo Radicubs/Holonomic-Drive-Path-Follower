@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.PathGenerator;
 import frc.robot.commands.TeleOpControl;
+import frc.robot.commands.TrajectoryConstants;
 import frc.robot.subsystems.SimulationChassis;
 
 import java.io.IOException;
@@ -73,23 +74,23 @@ public class RobotContainer
      */
     public Command getAutonomousCommand() throws IOException {
         if(pathGeneration.getSelected() == 0){
-            return PathGenerator.fromPathweaverJSON(chassisSim, true,"paths/examplePath.json");
+            return PathGenerator.fromPathweaverJSON(chassisSim, TrajectoryConstants.DEFAULTS, true,"paths/examplePath.json");
 
         }
         else if(pathGeneration.getSelected() == 1) {
-            return PathGenerator.fromSplinePoints(chassisSim, true,
+            return PathGenerator.fromSplinePoints(chassisSim, TrajectoryConstants.DEFAULTS, true,
                     new Pose2d(new Translation2d(3, 1), Rotation2d.fromDegrees(25)),
                     new Pose2d(new Translation2d(6, 1), Rotation2d.fromDegrees(60)),
                     new Pose2d(new Translation2d(8, 6), Rotation2d.fromDegrees(25)));
         }
         else if(pathGeneration.getSelected() == 2){
-            return PathGenerator.fromSimplifiedSplinePoints(chassisSim, true,
+            return PathGenerator.fromSimplifiedSplinePoints(chassisSim, TrajectoryConstants.DEFAULTS, true,
                     new Pose2d(new Translation2d(3, 1), Rotation2d.fromDegrees(25)),
                     new Pose2d(new Translation2d(8, 6), Rotation2d.fromDegrees(25)),
                     new Translation2d(6, 1));
         }
         else{
-            return PathGenerator.fromStraightPoints(chassisSim,
+            return PathGenerator.fromStraightPoints(chassisSim, TrajectoryConstants.DEFAULTS,
                     new Pose2d(new Translation2d(3, 1), Rotation2d.fromDegrees(25)),
                     new Pose2d(new Translation2d(6, 1), Rotation2d.fromDegrees(60)),
                     new Pose2d(new Translation2d(8, 6), Rotation2d.fromDegrees(120)));
