@@ -28,24 +28,29 @@ public class RobotContainer
 {
     private final Joystick joystick;
     private final SimulationChassis chassisSim;
-    public SendableChooser<Integer> pathGeneration;
+    private final SendableChooser<Integer> pathGeneration;
+    private final SendableChooser<Boolean> isFieldOriented, followTrajectoryHeading;
 
     public RobotContainer()
     {
         joystick = new Joystick(0);
         chassisSim = new SimulationChassis();
-        SendableChooser<Boolean> isFieldOriented = new SendableChooser<>();
+        isFieldOriented = new SendableChooser<>();
         isFieldOriented.setDefaultOption("Field Oriented", true);
         isFieldOriented.addOption("Robot Oriented", false);
         SmartDashboard.putData("Control Mode", isFieldOriented);
 
-        SendableChooser<Integer> pathGeneration = new SendableChooser<>();
+        followTrajectoryHeading = new SendableChooser<>();
+        followTrajectoryHeading.setDefaultOption("True", true);
+        followTrajectoryHeading.addOption("False", false);
+        SmartDashboard.putData("Follow Trajectory Heading", followTrajectoryHeading);
+
+        pathGeneration = new SendableChooser<>();
         pathGeneration.setDefaultOption("Pathweaver", 0);
         pathGeneration.addOption("Spline Point Generation", 1);
         pathGeneration.addOption("Simplified Spline Point Generation", 2);
         pathGeneration.addOption("Straight Point Generation",3);
         SmartDashboard.putData("Path Generation", pathGeneration);
-        this.pathGeneration = pathGeneration;
 
 
         chassisSim.setDefaultCommand(new TeleOpControl(
@@ -73,17 +78,17 @@ public class RobotContainer
      */
     public Command getAutonomousCommand() throws IOException {
         if(pathGeneration.getSelected() == 0){
-            return PathGenerator.fromPathweaverJSON(chassisSim, true,"paths/examplePath.json");
+            return PathGenerator.fromPathweaverJSON(chassisSim, followTrajectoryHeading.getSelected(),"paths/examplePath.json");
 
         }
         else if(pathGeneration.getSelected() == 1) {
-            return PathGenerator.fromSplinePoints(chassisSim, true,
+            return PathGenerator.fromSplinePoints(chassisSim, followTrajectoryHeading.getSelected(),
                     new Pose2d(new Translation2d(3, 1), Rotation2d.fromDegrees(25)),
                     new Pose2d(new Translation2d(6, 1), Rotation2d.fromDegrees(60)),
-                    new Pose2d(new Translation2d(8, 6), Rotation2d.fromDegrees(25)));
+                    new Pose2d(new Translation2d(8, 6), Rotation2d.fromDegrees(120)));
         }
         else if(pathGeneration.getSelected() == 2){
-            return PathGenerator.fromSimplifiedSplinePoints(chassisSim, true,
+            return PathGenerator.fromSimplifiedSplinePoints(chassisSim, followTrajectoryHeading.getSelected(),
                     new Pose2d(new Translation2d(3, 1), Rotation2d.fromDegrees(25)),
                     new Pose2d(new Translation2d(8, 6), Rotation2d.fromDegrees(25)),
                     new Translation2d(6, 1));
