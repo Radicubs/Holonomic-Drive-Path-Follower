@@ -8,8 +8,6 @@ public class Constants {
         // It gives the simulation some buffer if the robot falls behind
         public final static double MAX_ACCELERATION = 5.0;
         public final static double MAX_ANGULAR_ACCELERATION = 4.0;
-        public final static double MAX_AXIS_SPEED = 6;
-        public final static double MAX_ANGULAR_SPEED = 6.5;
     }
 
     public class TrajectoryFollower {
