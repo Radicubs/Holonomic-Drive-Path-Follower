@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Pose2d;
+
 public record TrajectoryConstants(
         double maxPathSpeed,
         double maxPathAngularSpeed,

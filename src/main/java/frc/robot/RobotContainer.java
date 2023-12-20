@@ -25,15 +25,13 @@ import java.io.IOException;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
-public class RobotContainer
-{
+public class RobotContainer {
     private final Joystick joystick;
     private final SimulationChassis chassisSim;
     private final SendableChooser<Integer> pathGeneration;
     private final SendableChooser<Boolean> isFieldOriented, followTrajectoryHeading;
 
-    public RobotContainer()
-    {
+    public RobotContainer() {
         joystick = new Joystick(0);
         chassisSim = new SimulationChassis();
         isFieldOriented = new SendableChooser<>();
@@ -50,7 +48,7 @@ public class RobotContainer
         pathGeneration.setDefaultOption("Pathweaver", 0);
         pathGeneration.addOption("Spline Point Generation", 1);
         pathGeneration.addOption("Simplified Spline Point Generation", 2);
-        pathGeneration.addOption("Straight Point Generation",3);
+        pathGeneration.addOption("Straight Point Generation", 3);
         SmartDashboard.putData("Path Generation", pathGeneration);
 
 
@@ -65,9 +63,10 @@ public class RobotContainer
     }
 
 
-    /** Use this method to define your trigger->command mappings. */
-    private void configureBindings()
-    {
+    /**
+     * Use this method to define your trigger->command mappings.
+     */
+    private void configureBindings() {
 
     }
 
@@ -78,23 +77,20 @@ public class RobotContainer
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() throws IOException {
-        if(pathGeneration.getSelected() == 0){
-            return PathGenerator.fromPathweaverJSON(chassisSim, TrajectoryConstants.DEFAULTS, followTrajectoryHeading.getSelected(),"paths/examplePath.json");
+        if (pathGeneration.getSelected() == 0) {
+            return PathGenerator.fromPathweaverJSON(chassisSim, TrajectoryConstants.DEFAULTS, followTrajectoryHeading.getSelected(), "paths/examplePath.json");
 
-        }
-        else if(pathGeneration.getSelected() == 1) {
+        } else if (pathGeneration.getSelected() == 1) {
             return PathGenerator.fromSplinePoints(chassisSim, TrajectoryConstants.DEFAULTS, followTrajectoryHeading.getSelected(),
                     new Pose2d(new Translation2d(3, 1), Rotation2d.fromDegrees(25)),
                     new Pose2d(new Translation2d(6, 1), Rotation2d.fromDegrees(60)),
                     new Pose2d(new Translation2d(8, 6), Rotation2d.fromDegrees(120)));
-        }
-        else if(pathGeneration.getSelected() == 2){
+        } else if (pathGeneration.getSelected() == 2) {
             return PathGenerator.fromSimplifiedSplinePoints(chassisSim, TrajectoryConstants.DEFAULTS, followTrajectoryHeading.getSelected(),
                     new Pose2d(new Translation2d(3, 1), Rotation2d.fromDegrees(25)),
                     new Pose2d(new Translation2d(8, 6), Rotation2d.fromDegrees(25)),
                     new Translation2d(6, 1));
-        }
-        else{
+        } else {
             return PathGenerator.fromStraightPoints(chassisSim, TrajectoryConstants.DEFAULTS,
                     new Pose2d(new Translation2d(3, 1), Rotation2d.fromDegrees(25)),
                     new Pose2d(new Translation2d(6, 1), Rotation2d.fromDegrees(60)),
