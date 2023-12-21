@@ -38,9 +38,9 @@ public class TeleOpControl extends CommandBase {
     public void execute() {
         SmartDashboard.putNumber("Robot Pose", chassisSim.getRobotPose().getX());
         ChassisSpeeds speeds = new ChassisSpeeds(
-                xInput.getAsDouble() * Constants.TrajectoryFollower.MAX_PATH_SPEED,
-                yInput.getAsDouble() * Constants.TrajectoryFollower.MAX_PATH_SPEED,
-                rotInput.getAsDouble() * Constants.TrajectoryFollower.MAX_PATH_ANGULAR_SPEED
+                xInput.getAsDouble() * 3,
+                yInput.getAsDouble() * 3,
+                rotInput.getAsDouble() * 3
         );
         if(isFieldOriented.getAsBoolean()){
             chassisSim.driveFromFieldOrientedChassisSpeeds(speeds);
