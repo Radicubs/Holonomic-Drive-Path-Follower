@@ -1,6 +1,4 @@
-package frc.robot.commands;
-
-import edu.wpi.first.math.geometry.Pose2d;
+package com.radicubs;
 
 public record TrajectoryConstants(
         double maxPathSpeed,

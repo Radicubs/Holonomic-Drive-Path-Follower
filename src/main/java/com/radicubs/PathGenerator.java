@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package com.radicubs;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -9,7 +9,6 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.*;
-import frc.robot.HolonomicPathFollower;
 
 import java.io.IOException;
 import java.nio.file.Path;

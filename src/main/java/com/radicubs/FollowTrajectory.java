@@ -1,10 +1,9 @@
-package frc.robot.commands;
+package com.radicubs;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.HolonomicPathFollower;
 
 public class FollowTrajectory extends PathFollowingCommand {
     private final boolean followTrajectoryHeading;
